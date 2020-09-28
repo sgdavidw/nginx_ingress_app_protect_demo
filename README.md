@@ -12,7 +12,7 @@ You must install and configure the following tools before moving forward
 - You have got a NGINX Plus/App Protect license.  
   _Note: You can send a request for NGINX Plus and NGINX App Protect trial license at https://www.nginx.com/free-trial-request/._
 
-##Quick start
+## Quick start
 
 - Choose a base directory, for example:
 

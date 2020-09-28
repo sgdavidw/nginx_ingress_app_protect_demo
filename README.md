@@ -31,7 +31,7 @@ You must install and configure the following tools before moving forward
   - For NGINX Plus, make sure that the certificate (nginx-repo.crt) and the key (nginx-repo.key) of your license are located in the root of the kubernetes_ingress project.
   - <span style="color:red">**The NGINX Plus image only can be pushed into a private registry!!!**</span>
   - NGINX Ingress Controller is built with the Dockerfile `appprotect/DockerfileWithAppProtectForPlus` using the make command as follows:  
-    `make DOCKERFILE=appprotect/DockerfileWithAppProtectForPlus PREFIX=xxxxxxx.dkr.ecr..amazonaws.com/nginx-plus-ingress-app-protect`
+    `make DOCKERFILE=appprotect/DockerfileWithAppProtectForPlus PREFIX=xxxxxxx.dkr.ecr.us-west-2.amazonaws.com/nginx-plus-ingress-app-protect`
   - Please refer to [Building the Ingress Controller Image](https://docs.nginx.com/nginx-ingress-controller/installation/building-ingress-controller-image/) for more details.
 - `./demo.sh Onboard_NGINX_IC_App_Protect`
   - Use helm chart to deploy NGINX Ingress Controller to the EKS cluster. The helm chart command as follows:

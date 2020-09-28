@@ -1,0 +1,39 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
+    To change the NGINX Ingress hostname {{ $host.host }} to AWS hostname:
+    Run the following shell commands:
+      export INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+      echo "INGRESS_HOSTNAME:$INGRESS_HOSTNAME"
+    then change .Values.ingress.hosts.host to $INGRESS_HOSTNAME
+    run "helm upgrade -i juice-shop jschart/"
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "jschart.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "jschart.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "jschart.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "jschart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:80
+{{- end }}
+{{- if not .Values.ingress.app_protect.enabled }}
+  To enable NGINX App Protect on the NGINX Ingress to protect Juice-Shop App:
+    1. Run the following shell commands:
+    export SYSLOG_IP=$(kubectl get svc syslog-svc -o jsonpath='{.spec.clusterIP}')
+    export INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+    echo "SYSLOG_IP:$SYSLOG_IP"
+    echo "INGRESS_HOSTNAME:$INGRESS_HOSTNAME"
+    2. change .Values.ingress.app_protect.syslog_server to $SYSLOG_IP
+    3. change .Values.ingress.hosts.host to $INGRESS_HOSTNAME
+    4. change .Values.ingress.app_protect.enable to true
+    5. run "helm upgrade -i juice-shop jschart/"
+{{- end }}

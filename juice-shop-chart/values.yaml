@@ -1,0 +1,90 @@
+# Default values for jschart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: bkimminich/juice-shop
+  tag: latest
+  port: 3000
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  #type: ClusterIP
+  port: 80
+  type: ClusterIP
+  #port: 3000
+  targetPort: 3000
+  #internalPort: 3000 // Internal exposed within the pod
+ingress:
+  enabled: true
+  app_protect:
+    enabled: false
+    syslog_server: 127.0.0.1
+    annotations:
+      {
+        kubernetes.io/ingress.class: "nginx",
+        appprotect.f5.com/app-protect-policy: "default/dataguard-alarm",
+        appprotect.f5.com/app-protect-enable: "True",
+        appprotect.f5.com/app-protect-security-log-enable: "True",
+        appprotect.f5.com/app-protect-security-log: "default/logconf",
+        appprotect.f5.com/app-protect-security-log-destination: "syslog:server=127.0.0.1:514",
+      }
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    #- host:
+    - host: chart-example.local
+      paths: [/]
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

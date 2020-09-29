@@ -55,12 +55,13 @@ You must install and configure the following tools before moving forward.
   - `./demo.sh Deploy_Juice-Shop_Without_App_Protect`
   - `./demo.sh Deploy_Juice-Shop_With_App_Protect`
   - `./demo.sh Check_Syslog`
+  - `./demo.sh Test_Signature-Exclude_APPolicy`
   - `./demo.sh Clean_Up`
 
 ## To-Do list
 
-- Move App Protect annotations to the templates/ingress.yaml, make syslog_server, and App Protect policy name as variables in the values.yaml
-- Add the step to modify the policy to let App Protect not block the requests that are identified as false positives.
-- Add the step to update the App Protect Attack Signature file.
-- Change the Syslog server to the Elastic Search
-- Add TLS configuration to the ingress.
+- [ ] Move App Protect annotations to the templates/ingress.yaml, make syslog_server, and App Protect policy name as variables in the values.yaml
+- [x] Add the step to modify the policy to let App Protect not block the requests that are identified as false positives. Done. Add signatures-exclude policy.
+- [ ] Add the step to update the App Protect Attack Signature file.
+- [ ] Change the Syslog server to the Elastic Search
+- [ ] Add TLS configuration to the ingress.

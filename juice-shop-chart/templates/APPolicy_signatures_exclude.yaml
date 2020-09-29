@@ -1,0 +1,34 @@
+apiVersion: appprotect.f5.com/v1beta1
+kind: APPolicy
+metadata:
+  name: signature-exclude
+spec:
+  policy:
+    applicationLanguage: utf-8
+    blocking-settings:
+      violations:
+        - alarm: true
+          block: false
+          name: VIOL_DATA_GUARD
+    data-guard:
+      creditCardNumbers: true
+      enabled: true
+      enforcementMode: ignore-urls-in-list
+      enforcementUrls: []
+      lastCcnDigitsToExpose: 4
+      lastSsnDigitsToExpose: 4
+      maskData: true
+      usSocialSecurityNumbers: true
+    signatures:
+      - signatureId: 200000099
+        enabled: false
+      - signatureId: 200000093
+        enabled: false
+      - signatureId: 200000098
+        enabled: false
+      - signatureId: 200001475
+        enabled: false
+    enforcementMode: blocking
+    name: signature-exclude
+    template:
+      name: POLICY_TEMPLATE_NGINX_BASE

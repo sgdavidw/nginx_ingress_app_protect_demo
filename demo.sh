@@ -217,6 +217,22 @@ Deploy_Juice-Shop_With_App_Protect () {
   pe "helm upgrade -i juice-shop juice-shop-chart --set ingress.app_protect.enabled=true"
 
 }
+
+Test_Signature-Exclude_APPolicy () {
+  INGRESS_HOSTNAME=$(kubectl  get svc nginx-controller-nap-nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[].hostname}')
+  p "Send an illegal request 'http://$INGRESS_HOSTNAME/?<script>' and remember the support-id in the blocking page."
+  p "Log into the syslog container, find the corresponding violation event log using command 'grep <support-id> /var/log/messages'."
+  p "In the event log, find out the attack signature IDs that trigger the violation."
+  p "Modify juice-shop-chart/APPolicy_signatures_exclude.yaml to add the Signature IDs into the signatures-exclude policies"
+  p "run command 'kubectl apply -f juice-shop-chart/APPolicy_signatures_exclude.yaml'"
+  p "Modify juice-shop-chart/values.yaml to change app-protect-policy from \"default/dataguard-alarm\" to \"signatures-exclude\" policy."
+  p "Run command 'helm upgrade -i juice-shop juice-shop-chart --set ingress.app_protect.enabled=true' to apply the policy change."
+  p "Re-send the illegal request 'http://$INGRESS_HOSTNAME/\?<script>'"
+
+}
+
+
+
 Create_App_Protect_Policy () {
   p "Create the App Protect policy and log configuration:"
   pe "kubectl create -f $INGRESS_BASE_DIR/examples/appprotect/dataguard-alarm.yaml"
@@ -350,6 +366,7 @@ test_full(){
   Deploy_Juice-Shop_Without_App_Protect
   Deploy_Juice-Shop_With_App_Protect
   Check_Syslog 
+  Test_Signature-Exclude_APPolicy
   Clean_Up
 }
 test () {
@@ -551,6 +568,9 @@ case "$DEMO" in
   Deploy_Juice-Shop_With_App_Protect)
     Deploy_Juice-Shop_With_App_Protect
     ;;  
+  Test_Signature-Exclude_APPolicy)
+    Test_Signature-Exclude_APPolicy
+    ;;
   Build_Push_IC_AppProtect_Image)
     Build_Push_IC_AppProtect_Image
     ;;
@@ -597,7 +617,7 @@ case "$DEMO" in
     p "Usage: $0 {test|test_full}"
     p "Usage: $0 {Create_EKS_Cluster|Build_Push_IC_AppProtect_Image|Onboard_NGINX_IC_App_Protect|Deploy_Syslog_Server}"
     p "Usage: $0 {Deploy_Juice-Shop_Without_App_Protect|Deploy_Juice-Shop_With_App_Protect|Check_Syslog}"  
-    p "Usage: $0 {Clean_Up|Delete_EKS_Cluster}"  
+    p "Usage: $0 {Test_Signature-Exclude_APPolicy|Clean_Up|Delete_EKS_Cluster}"  
     p "Usage: $0 {Configure_RBAC|Create_Common_Resources|Create_Custom_Resources|Create_NAP_Resources}"
     p "Usage: $0 {Deploy_NIC_as_pod|Deploy_NIC_as_DeamonSet|Coffee_Tea_Ingress_Example}"
 

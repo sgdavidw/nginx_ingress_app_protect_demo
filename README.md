@@ -1,8 +1,14 @@
 # Deploy NGINX Plus Ingress Controller/App Protect on the AWS demo script
 
-The [demo-magic.sh](https://github.com/paxtonhare/demo-magic) is a handy shell script that enables you to script repeatable demos in a bash environment, so you don't have to type as you present. Rather than trying to type commands when presenting you simply script them and let [demo-magic.sh](https://github.com/paxtonhare/demo-magic) run them for you.
+F5/NGINX released the NGINX Plus Ingress Controller for Kubernetes release 1.8.0 a few months ago. Now you can embed the NGINX App Protect WAF in the Ingress Controller.
+![Securing Your Apps in Kubernetes with NGINX App Protect](https://www.nginx.com/wp-content/uploads/2020/08/NGINX-App-Protect-secure-K8s-apps_topology.png)
+On the NGINX Website, there is an article about how to secure applications in Kubernetes with NGINX App Protect. Here is the link of this article https://www.nginx.com/blog/securing-apps-in-kubernetes-nginx-app-protect/.
 
-The demo script uses [demo-magic.sh](https://github.com/paxtonhare/demo-magic) to demonstrate the following:
+I read the article then decided to try NGINX Plus Ingress Controller with App Protect to secure a [OWASP Juice-Shop](https://github.com/bkimminich/juice-shop) application running in the AWS EKS (Elastic Kubernetes Service) cluster. However, the Kubernetes Ingress Controller is new to me. It took me a while to read [the NGINX Ingress Controller for Kubernetes document](https://docs.nginx.com/nginx-ingress-controller/overview/) and understood how to make it work.
+
+I logged all the commands/steps that I used in my experiments to a bash script so that I can repeat the commands for a demo easily. Later I found the [demo-magic.sh](https://github.com/paxtonhare/demo-magic), a very handy shell script. It enables me to script repeatable demos in a bash environment, so I don't have to type all the commands when I demonstrate how to build, configure and run the NGINX Plus Ingress Controller with App Protect. The demo-magic.sh](https://github.com/paxtonhare/demo-magic) can show all the commands in the script and the output of those commands.
+
+The demo.sh script in this repo uses [demo-magic.sh](https://github.com/paxtonhare/demo-magic) to demonstrate the following functions:
 
 - Build an [NGINX Plus Ingress Controller](https://github.com/nginxinc/kubernetes-ingress) with [App Protect](https://docs.nginx.com/nginx-ingress-controller/app-protect/installation/) container image and onboard it in a Kubernetes cluster in the AWS cloud;
 - Use [Helm Chart](https://helm.sh/docs/topics/charts/) to deploy an [OWASP Juice-Shop](https://github.com/bkimminich/juice-shop) application in the Kubernetes cluster.
@@ -56,3 +62,4 @@ You must install and configure the following tools before moving forward.
 - Move App Protect annotations to the templates/ingress.yaml, make syslog_server, and App Protect policy name as variables in the values.yaml
 - Add the step to modify the policy to let App Protect not block the requests that are identified as false positives.
 - Change the Syslog server to the Elastic Search
+- Add TLS configuration to the ingress.

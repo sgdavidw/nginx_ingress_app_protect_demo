@@ -29,11 +29,11 @@
   To enable NGINX App Protect on the NGINX Ingress to protect Juice-Shop App:
     1. Run the following shell commands:
     export SYSLOG_IP=$(kubectl get svc syslog-svc -o jsonpath='{.spec.clusterIP}')
-    export INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+    export INGRESS_HOSTNAME=$(kubectl  get svc nginx-controller-nap-nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[].hostname}')
     echo "SYSLOG_IP:$SYSLOG_IP"
     echo "INGRESS_HOSTNAME:$INGRESS_HOSTNAME"
     2. change .Values.ingress.app_protect.syslog_server to $SYSLOG_IP
     3. change .Values.ingress.hosts.host to $INGRESS_HOSTNAME
-    4. change .Values.ingress.app_protect.enable to true
+    4. change .Values.ingress.app_protect.enabled to true
     5. run "helm upgrade -i juice-shop jschart/"
 {{- end }}

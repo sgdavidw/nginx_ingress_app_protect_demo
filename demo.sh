@@ -150,7 +150,7 @@ Create_EKS_Cluster() {
 
   p "#Press to continue"
   wait
-  pe "eksctl create cluster --name $EKS_Cluster_NAME --version 1.17 --region us-west-2 --nodegroup-name linux-nodes \
+  pe "eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.17 --region us-west-2 --nodegroup-name linux-nodes \
 --nodes 2 --nodes-min 1 --nodes-max 4 --ssh-access --ssh-public-key devsecops --managed"
 
 }
@@ -176,6 +176,9 @@ Onboard_NGINX_IC_App_Protect() {
 Check_Syslog () {
   syslog_pod=$(kubectl get pod -l app=syslog -o jsonpath='{.items[].metadata.name}')
   pe "kubectl exec -ti $syslog_pod -- cat /var/log/messages"
+  p "You can use the following command to log into the syslog container to check the violation event log:"
+  p "kubectl exec -ti $syslog_pod -- bash"
+  p "The event logs are in the /var/log/messages file."
 }
 Deploy_Syslog_Server() {
   p "Create the syslog service and pod for the App Protect security logs:"
@@ -184,8 +187,10 @@ Deploy_Syslog_Server() {
 }
 Deploy_Juice-Shop_Without_App_Protect () {
   pe "cd $DEMO_SHELL_BASE_DIR"
-  pe "helm upgrade -i juice-shop juice-shop-chart --set ingress.app_protect.enabled=fale"
-  INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+  pe "helm upgrade -i juice-shop juice-shop-chart --set ingress.app_protect.enabled=false"
+  #INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+  INGRESS_HOSTNAME=$(kubectl  get svc nginx-controller-nap-nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[].hostname}')
+
   p "Ingress hostname is $INGRESS_HOSTNAME, update .Values.ingress.hosts.host in the values.yaml to match this hostname"
   grep "\- host:" juice-shop-chart/values.yaml
   sed -i '' -E 's/- host: .*/- host: '"$INGRESS_HOSTNAME"'/g' juice-shop-chart/values.yaml
@@ -197,7 +202,8 @@ Deploy_Juice-Shop_Without_App_Protect () {
 Deploy_Juice-Shop_With_App_Protect () {
   pe "cd $DEMO_SHELL_BASE_DIR"
   SYSLOG_SERVER=$(kubectl get svc syslog-svc -o jsonpath='{.spec.clusterIP}')
-  INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+  #INGRESS_HOSTNAME=$(kubectl get ingress -o jsonpath='{.items[].status.loadBalancer.ingress[].hostname}')
+  INGRESS_HOSTNAME=$(kubectl  get svc nginx-controller-nap-nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[].hostname}')
   p "Ingress hostname is $INGRESS_HOSTNAME, update .Values.ingress.hosts.host in the values.yaml to match this hostname"
   grep "\- host:" juice-shop-chart/values.yaml
   sed -i '' -E 's/- host: .*/- host: '"$INGRESS_HOSTNAME"'/g' juice-shop-chart/values.yaml

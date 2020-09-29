@@ -1,18 +1,27 @@
 # Deploy NGINX Plus Ingress Controller/App Protect on the AWS demo script
 
-The [demo-magic.sh](https://github.com/paxtonhare/demo-magic) is a handy shell script that enables you to script repeatable demos in a bash environment so you don't have to type as you present. Rather than trying to type commands when presenting you simply script them and let demo-magic.sh run
+The [demo-magic.sh](https://github.com/paxtonhare/demo-magic) is a handy shell script that enables you to script repeatable demos in a bash environment, so you don't have to type as you present. Rather than trying to type commands when presenting you simply script them and let demo-magic.sh run
 them for you.
+
+The demo script uses demo-magic.sh to demonstrate the following:
+
+- Build an NGINX Plus Ingress Controller with App Protect container image and onboard it in a Kubernetes cluster in the AWS cloud;
+- Use Helm Chart to deploy an OWASP Juice-Shop application in the Kubernetes cluster.
+- The Helm Chart also deploys an NGINX Plus ingress without App Protect for the Juice-Shop app so that you can access the app from the Internet
+- Enable App Protect on the NGINX Plus ingress and see it blocking the illegal request
+- Check the violation event log on the Syslog server
+- Modify the App Protect policy to let App Protect pass the requests that are false positive
 
 ## Prerequisite
 
-You must install and configure the following tools before moving forward
+You must install and configure the following tools before moving forward.
 
 - Install docker, kubectl, helm, awscli, eksctl on your local machine.
 - You have an AWS account and run `aws configure` command to configure it on your local machine.
-- You have got a NGINX Plus/App Protect license.  
+- You have got an NGINX Plus/App Protect license.  
   _Note: You can send a request for NGINX Plus and NGINX App Protect trial license at https://www.nginx.com/free-trial-request/._
 
-## Quick start
+## Quickstart
 
 - Choose a base directory, for example:
 
@@ -40,3 +49,9 @@ You must install and configure the following tools before moving forward
 - `./demo.sh Deploy_Juice-Shop_With_App_Protect`
 - `./demo.sh Check_Syslog`
 - `./demo.sh Clean_Up`
+
+## To-Do list
+
+- Move App Protect annotations to the templates/ingress.yaml, make syslog_server, and App Protect policy name as variables in the values.yaml
+- Add the step to modify the policy to let App Protect not block the requests that are identified as false positives.
+- Change the Syslog server to the Elastic Search
